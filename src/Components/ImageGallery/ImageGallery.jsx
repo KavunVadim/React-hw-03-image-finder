@@ -1,27 +1,27 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Loader from "../Loader/Loader";
-import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
-import Button from "../Button/Button";
 
-const ImageGallery = ({ images, loader }) => {
+import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
+
+const ImageGallery = ({ images, openModal }) => {
   return (
     <>
       <ul className="ImageGallery">
-        {<Loader loader={loader} /> &&
-          images.map((image) => <ImageGalleryItem image={image} />)}
+        {images.map((image) => (
+          <ImageGalleryItem
+            key={image.id}
+            image={image}
+            openModal={openModal}
+          />
+        ))}
       </ul>
-      {!!images.length && <Button />}
     </>
   );
 };
 
 ImageGallery.propTypes = {
-  // bla: PropTypes.string,
-};
-
-ImageGallery.defaultProps = {
-  // bla: 'test',
+  images: PropTypes.array.isRequired,
+  openModal: PropTypes.func.isRequired,
 };
 
 export default ImageGallery;

@@ -1,13 +1,34 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
-//import { Test } from './Modal.styles';
 
-const Modal = (props) => {
+const Modal = ({ largeImageUrl, tags, closeModal }) => {
+  useEffect(() => {
+    window.addEventListener("keydown", handelPressKey);
+    return () => {
+      window.removeEventListener("keydown", handelPressKey);
+    };
+  }, []);
+
+  const handelPressKey = (e) => {
+    if (e.code !== "Escape") {
+      return;
+    }
+    closeModal();
+  };
+
+  const handelDropClick = (e) => {
+    if (e.target.tagName === "IMG") {
+      return;
+    }
+    closeModal();
+  };
+
   return (
     <>
-      <div className="Overlay">
+      <div className="Overlay" onClick={handelDropClick}>
         <div className="Modal">
-          <img src="" alt="" />
+          <img src={largeImageUrl} alt={tags} />
         </div>
       </div>
     </>
@@ -15,11 +36,8 @@ const Modal = (props) => {
 };
 
 Modal.propTypes = {
-  // bla: PropTypes.string,
-};
-
-Modal.defaultProps = {
-  // bla: 'test',
+  largeImageUrl: PropTypes.node.isRequired,
+  closeModal: PropTypes.func,
 };
 
 export default Modal;
