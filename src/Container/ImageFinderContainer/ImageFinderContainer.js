@@ -1,19 +1,17 @@
 import React, { Component } from "react";
 
-import axios from "axios";
 import Searchbar from "../../Components/Searchbar/Searchbar";
 import ImageGallery from "../../Components/ImageGallery/ImageGallery";
 import Modal from "../../Components/Modal/Modal";
 import Button from "../../Components/Button/Button";
 import Loader from "../../Components/Loader/Loader";
-
-const CLIENT_KEY = process.env.REACT_APP_CLIENT_KEY;
+import api from "../../helpers/api";
 
 class ImageFinderContainer extends Component {
   state = {
     images: [],
-    searchName: "",
-    currentPage: 1,
+    query: "",
+    page: 1,
     largeImageUrl: "",
     tags: "",
     loader: false,
@@ -22,8 +20,8 @@ class ImageFinderContainer extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { searchName, images } = this.state;
-    if (prevState.searchName !== searchName) {
+    const { query, images } = this.state;
+    if (prevState.query !== query) {
       this.getImages();
     }
 
@@ -35,19 +33,16 @@ class ImageFinderContainer extends Component {
     }
   }
 
-  getImages = async (page = 1) => {
-    const { searchName, images } = this.state;
-    this.setState({ loader: true });
-    try {
-      const response = await axios.get(
-        `https://pixabay.com/api/?q=${searchName}&page=${page}&per_page=12&lang=ru&key=${CLIENT_KEY}`
-      );
+  getImages = async () => {
+    const { query, images, page } = this.state;
 
-      this.setState({
-        images: [...images, ...response.data.hits],
-      });
+    this.setState({ loader: true });
+
+    try {
+      const response = await api(query, page);
+      this.setState({ images: [...images, ...response], page: page + 1 });
     } catch (error) {
-      console.log("ERROR GET");
+      console.log(error);
     } finally {
       this.setState({ loader: false });
     }
@@ -62,19 +57,14 @@ class ImageFinderContainer extends Component {
   };
 
   onSubmit = (name) => {
-    const { searchName } = this.state;
-    if (searchName === name) return;
-    this.setState({ searchName: name, images: [], currentPage: 1 });
-  };
-
-  loadMore = () => {
-    const newPage = this.state.currentPage + 1;
-    this.getImages(newPage);
-    this.setState({ currentPage: newPage });
+    const { query } = this.state;
+    if (query === name) return;
+    this.setState({ query: name, images: [], page: 1 });
   };
 
   render() {
     const { images, isOpen, loader } = this.state;
+
     return (
       <>
         <Searchbar onSubmit={this.onSubmit} />
@@ -89,7 +79,7 @@ class ImageFinderContainer extends Component {
             tags={this.state.tags}
           />
         )}
-        {!!images.length && !loader && <Button loadMore={this.loadMore} />}
+        {!!images.length && !loader && <Button loadMore={this.getImages} />}
       </>
     );
   }

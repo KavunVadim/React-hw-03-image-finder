@@ -20,11 +20,12 @@ class Searchbar extends Component {
 
   formSubmit = (e) => {
     const { name } = this.state;
+
     e.preventDefault();
     if (!name) {
       return;
     }
-    this.props.onSubmit(this.state.name);
+    this.props.onSubmit(name);
 
     this.setState({ name: "" });
   };

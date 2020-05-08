@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 const ImageGalleryItem = ({ image, openModal }) => {
   const { webformatURL, largeImageURL, tags } = image;
+
   return (
     <>
       <li className="ImageGalleryItem">
